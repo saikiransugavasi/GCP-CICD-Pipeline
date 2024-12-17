@@ -1,0 +1,23 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.8.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to GCP using SCP
+      run: |
+        scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipeline.p2staging.us/
