@@ -18,6 +18,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Add GCP server to known_hosts
+      run: |
+        echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
     - name: Deploy to GCP using SCP
       run: |
         scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipeline.p2staging.us/
