@@ -27,7 +27,15 @@ jobs:
         scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipeline.p2staging.us/
 
     - name: Send Slack Notification
+      if: ${{ success() }}
       run: |
         curl -X POST -H 'Content-type: application/json' \
-        --data '{"text":"🚀 Deployment to GCP server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        --data '{"text":"✅ Deployment to GCP server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        ${{ secrets.SLACK_WEBHOOK_URL }}
+    
+    - name: Send Failure Notification
+      if: ${{ failure() }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"❌ Deployment failed for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
         ${{ secrets.SLACK_WEBHOOK_URL }}
