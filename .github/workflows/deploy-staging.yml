@@ -1,0 +1,42 @@
+name: Deploy to GCP (Staging)
+
+on:
+  push:
+    branches:
+      - staging  # Trigger deployment on pushes to the staging branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Add GCP server to known_hosts
+      run: |
+        echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+    - name: Deploy to GCP Staging using SCP
+      run: |
+        scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipelinestaging.p2staging.us/
+
+    - name: Send Slack Notification
+      if: ${{ success() }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"✅ Deployment to GCP Staging server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        ${{ secrets.SLACK_WEBHOOK_URL }}
+    
+    - name: Send Failure Notification
+      if: ${{ failure() }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"❌ Deployment to GCP Staging server failed for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        ${{ secrets.SLACK_WEBHOOK_URL }}
+

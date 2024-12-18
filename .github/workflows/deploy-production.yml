@@ -51,3 +51,4 @@ jobs:
         curl -X POST -H 'Content-type: application/json' \
         --data '{"text":"❌ Deployment failed for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
         ${{ secrets.SLACK_WEBHOOK_URL }}
+
