@@ -1,9 +1,9 @@
-name: Deploy to GCP
+name: Deploy to GCP (Staging)
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on pushes to the main branch
+      - staging  # Trigger deployment on pushes to the staging branch
 
 jobs:
   deploy:
@@ -12,18 +12,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Validate Commit Message
-      run: |
-        echo "${{ github.event.head_commit.message }}"
-        if [[ ! "${{ github.event.head_commit.message }}" =~ ^(feat|fix|chore)\: ]]; then
-          echo "❌ Invalid commit message. Must start with 'feat:', 'fix:', or 'chore:'."
-          # Send Slack notification on failure
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"❌ Invalid commit message in repository: ${{ github.repository }}. The commit must start with 'feat:', 'fix:', or 'chore:'. Commit message: \"${{ github.event.head_commit.message }}\""}' \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-          exit 1
-        fi
 
     - name: Set up SSH agent
       uses: webfactory/ssh-agent@v0.5.3
@@ -34,20 +22,21 @@ jobs:
       run: |
         echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
-    - name: Deploy to GCP using SCP
+    - name: Deploy to GCP Staging using SCP
       run: |
-        scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipeline.p2staging.us/
+        scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipelinestaging.p2staging.us/
 
     - name: Send Slack Notification
       if: ${{ success() }}
       run: |
         curl -X POST -H 'Content-type: application/json' \
-        --data '{"text":"✅ Deployment to GCP server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        --data '{"text":"✅ Deployment to GCP Staging server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
         ${{ secrets.SLACK_WEBHOOK_URL }}
     
     - name: Send Failure Notification
       if: ${{ failure() }}
       run: |
         curl -X POST -H 'Content-type: application/json' \
-        --data '{"text":"❌ Deployment failed for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        --data '{"text":"❌ Deployment to GCP Staging server failed for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
         ${{ secrets.SLACK_WEBHOOK_URL }}
+
