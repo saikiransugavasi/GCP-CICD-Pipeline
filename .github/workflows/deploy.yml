@@ -25,3 +25,9 @@ jobs:
     - name: Deploy to GCP using SCP
       run: |
         scp -r * saikiran_s@34.134.106.217:/var/www/html/cicdpipeline.p2staging.us/
+
+    - name: Send Slack Notification
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"🚀 Deployment to GCP server completed successfully for branch: ${{ github.ref_name }} in repository: ${{ github.repository }}."}' \
+        ${{ secrets.SLACK_WEBHOOK_URL }}
