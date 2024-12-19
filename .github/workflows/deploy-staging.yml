@@ -29,6 +29,11 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    - name: Run Tests
+      run: |
+        npm install
+        npm test
 
     - name: Add GCP server to known_hosts
       run: |
