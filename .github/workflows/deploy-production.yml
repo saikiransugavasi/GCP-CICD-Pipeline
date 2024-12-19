@@ -21,6 +21,11 @@ jobs:
     - name: Add GCP server to known_hosts
       run: |
         echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+    
+    - name: Run Tests
+      run: |
+        npm install
+        npm test
 
     - name: Deploy to GCP using SCP
       run: |

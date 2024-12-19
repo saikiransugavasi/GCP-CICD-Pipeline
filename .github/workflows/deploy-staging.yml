@@ -29,6 +29,19 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    - name: Run Tests
+      run: |
+        npm install
+        npm test
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.13.1' # Specify your Node.js version
+
+    - name: Install Dependencies
+      run: npm install
 
     - name: Add GCP server to known_hosts
       run: |
