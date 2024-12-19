@@ -12,18 +12,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
-    - name: Validate Commit Message
-      run: |
-        echo "${{ github.event.head_commit.message }}"
-        if [[ ! "${{ github.event.head_commit.message }}" =~ ^(feat|fix|chore)\: ]]; then
-          echo "❌ Invalid commit message. Must start with 'feat:', 'fix:', or 'chore:'."
-          # Send Slack notification on failure
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"❌ Invalid commit message in repository: ${{ github.repository }}. The commit must start with 'feat:', 'fix:', or 'chore:'. Commit message: \"${{ github.event.head_commit.message }}\""}' \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-          exit 1
-        fi
 
     - name: Set up SSH agent
       uses: webfactory/ssh-agent@v0.5.3
